@@ -180,7 +180,11 @@ def tr_download(i, block_dict, f, offset):
             log(f"分块{i + 1}/{nblocks}第{j + 1}次下载失败")
             if j == 9: succ = False
             continue
-        block = encoder.decode(block)
+        try:
+            block = encoder.decode(block)
+        except:
+            log(f"分块{i + 1}/{nblocks}第{j + 1}次下载失败(图片读取失败)")
+            continue
         if calc_sha1(block) == block_dict['sha1']:
             with lock:
                 f.seek(offset)
@@ -189,8 +193,7 @@ def tr_download(i, block_dict, f, offset):
             break
         else:
             log(f"分块{i + 1}/{nblocks}校验未通过")
-            if j == 9: succ = False
-            
+            if j == 9: succ = False            
 
 def download_handle(args):
     global succ
